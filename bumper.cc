@@ -37,19 +37,26 @@ int main(int argc, char *argv[])
 
   // Allow the program to take charge of the motors (take care now)
   pp.SetMotorEnable(true);
-int stuck1A = 0;
-int stuck1B = 0;
-int stuck2A = 0;
-int stuck2B = 0;
-int stuck3W = 0;
-int stuck3O = 0;
-int stuck4W = 0;
-int stuck4O = 0;
+  int stuck1A = 0;
+  int stuck1B = 0;
+  int stuck2A = 0;
+  int stuck2B = 0;
+  int stuck3W = 0;
+  int stuck3O = 0;
+  int stuck4W = 0;
+  int stuck4O = 0;
+  bool checkPoints[5];
+  checkPoints[0] = 0;
+  checkPoints[1] = 0;
+  checkPoints[2] = 0;
+  checkPoints[3] = 0;
+  checkPoints[4] = 0;
+  double turnrate, speed;
 
   // Control loop
-  while(true) 
+  while(!(checkPoints[0] == 1 && checkPoints[1] == 1 && checkPoints[2] == 1 && checkPoints[3] == 1 && checkPoints[4] == 1))
   {    
-      double turnrate, speed;
+      
 
       // Read from the proxies.
       robot.Read();
@@ -64,15 +71,27 @@ int stuck4O = 0;
       std::cout << "Left  bumper: " << bp[0] << std::endl;
       std::cout << "Right bumper: " << bp[1] << std::endl;
 
+      std::cout << "cp[0]: " << checkPoints[0] << std::endl;
+      std::cout << "cp[1]: " << checkPoints[1] << std::endl;
+      std::cout << "cp[2]: " << checkPoints[2] << std::endl;
+      std::cout << "cp[3]: " << checkPoints[3] << std::endl;
+      std::cout << "cp[4]: " << checkPoints[4] << std::endl;
+      
+
+
 	//if in the zone 1 
 	if(pp.GetXPos() < 10 && pp.GetYPos() < 5){
-
+		std::cout << "zone 1: going straight " << std::endl;
 		//if in the zone 1 A
 		if(pp.GetXPos() < 10 && pp.GetYPos() < 2){
+			checkPoints[0] = 1;
+			if(checkPoints[0] == 1 && checkPoints[1] == 1 && checkPoints[2] == 1 && checkPoints[3] == 1)
+			checkPoints[4] = 1;
 			//and facing east, go straight ahead
+			std::cout << "zone A1: " << std::endl;
 			if(pp.GetYaw() < 0.1 && pp.GetYaw() > -0.1){
 				
-				std::cout << "zone 1: going straight " << std::endl;
+				std::cout << "zone A1: going straight " << std::endl;
 				turnrate = 0;   
 		    	speed=0.5;
 
@@ -218,9 +237,13 @@ int stuck4O = 0;
 		//if in the zone 2 
 		if(pp.GetXPos() > 10 && pp.GetYPos() < 10){
 			std::cout << "zone 2" << std::endl;
+			
 		//if in the zone 2 A
 		if(pp.GetXPos() > 7 && pp.GetYPos() < 10){
+			if(checkPoints[0] == 1)
+				checkPoints[1] = 1;
 			//and facing east, go straight ahead
+			std::cout << "zone 2A:" << std::endl;
 			if(pp.GetYaw() < 1.7 && pp.GetYaw() > 1.4){
 				
 				std::cout << "zone 2A: going straight " << std::endl;
@@ -363,8 +386,11 @@ int stuck4O = 0;
 			//if in the zone 3	 
 			if(pp.GetXPos() > 2 && pp.GetYPos() > 8){
 				std::cout << "zone 3:" << std::endl;
+				
 				//if in the zone 3 A
 				if(pp.GetXPos() > 2 && pp.GetYPos() > 10){
+					if(checkPoints[0] == 1 && checkPoints[1] == 1)
+					checkPoints[2] = 1;
 					std::cout << "zone 3A:" << std::endl;
 					//and facing west, go straight ahead to the west
 					if(pp.GetYaw() < 3.1 && pp.GetYaw() > 3.0){		
@@ -573,10 +599,12 @@ int stuck4O = 0;
 		}
 			}else{
 				//if in the zone 4	 			 
-				if(pp.GetXPos() < 2.5 && pp.GetYPos() > 2){
+				if(pp.GetXPos() < 3 && pp.GetYPos() > 2){
 					std::cout << "zone 4:" << std::endl;
 					//if in the zone 4A
-				if(pp.GetXPos() < 0 || pp.GetYPos() > 10){
+				if(pp.GetXPos() < 1 || pp.GetYPos() > 10){
+					if(checkPoints[0] == 1 && checkPoints[1] == 1 && checkPoints[2] == 1)
+						checkPoints[3] = 1;
 					std::cout << "zone 4A:" << std::endl;
 					//and facing south, keep moving to south
 					if(pp.GetYaw() < -1.5 && pp.GetYaw() > -1.6){		
@@ -684,8 +712,9 @@ int stuck4O = 0;
 			std::cout << "zone 4B" << std::endl;
 
 			if(!(pp.GetYaw() < 3.1 && pp.GetYaw() > 3.0)){
+				std::cout << "turning west" << std::endl;
 				speed=0.2;
-				if(pp.GetYaw() > 3.1)
+				if(pp.GetYaw() > 3.1|| pp.GetYaw() < 0)
 					turnrate=dtor(-20);
 				else
 					turnrate=dtor(20);
@@ -733,8 +762,8 @@ int stuck4O = 0;
 			    robot.Read();			    
 			}
 
-			//in zone 4B and facing south, go straight ahead 
-			if(!(pp.GetXPos() < 0 && pp.GetYPos() > 2)){
+			//in zone 4B and facing west, go straight ahead 
+			if(!(pp.GetXPos() < 1 || pp.GetYPos() > 10)){
 				std::cout << "going back to zone 4A" << std::endl;
 					turnrate = 0;   
 		    		speed=0.2;		    	
@@ -778,8 +807,6 @@ int stuck4O = 0;
 						}
 					}
 				
-
-
 	   			pp.SetSpeed(speed, turnrate); 
 	      		robot.Read();
 			}
@@ -791,6 +818,9 @@ int stuck4O = 0;
       // Send the motion commands that we decided on to the robot.
       pp.SetSpeed(speed, turnrate);  
     }
+
+    speed = 0;
+    pp.SetSpeed(speed, turnrate);
 }
 
 
