@@ -114,7 +114,39 @@ int stuck4 = 0;
 				//but facing other than east, turn to east
 				if(!(pp.GetYaw() < 0.1 && pp.GetYaw() > -0.1)){
 					speed=0.2;
-					turnrate=dtor(30);
+					if(pp.GetYaw() > 0.1)
+						turnrate=dtor(-20);
+					else
+						turnrate=dtor(20);	
+
+					if(bp[0] || bp[1]){
+			    	std::cout << "wall in contact: ";	
+					speed=-0.2;
+					if (bp[0] && !bp[1]) {  
+						turnrate=dtor(-30); 
+						std::cout << "1" << std::endl;
+						stuck1A++;
+					}
+					if (!bp[0] && bp[1]) { 
+						turnrate=dtor(30); 
+						std::cout << "2" << std::endl;
+						stuck1A++;			
+					}
+
+					if (bp[0] && bp[1]) { stuck1A++; std::cout << "3" << std::endl;
+					if(rand()%2 > 0){turnrate=dtor(-30);}
+					else {turnrate=dtor(30);}}
+						stuck1A++;
+					if(stuck1A > 20){
+						std::cout << "stuck count max: ";
+						if(rand()%2>0)	
+						speed = -0.3;
+						else
+						speed = 0.3;
+						if(rand()%2 > 0){turnrate=dtor(-30);}
+						else {turnrate=dtor(30);}
+					}
+				}
 					pp.SetSpeed(speed, turnrate); 
 					std::cout << "zone 1: turning east " << std::endl;
 					std::cout << "x: " << pp.GetXPos()  << std::endl;
