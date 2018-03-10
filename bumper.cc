@@ -39,7 +39,8 @@ int main(int argc, char *argv[])
   pp.SetMotorEnable(true);
 int stuck1A = 0;
 int stuck1B = 0;
-int stuck2 = 0;
+int stuck2A = 0;
+int stuck2B = 0;
 int stuck3 = 0;
 int stuck4 = 0;
 
@@ -149,11 +150,6 @@ int stuck4 = 0;
 				}
 					pp.SetSpeed(speed, turnrate); 
 					std::cout << "zone 1: turning east " << std::endl;
-					std::cout << "x: " << pp.GetXPos()  << std::endl;
-					std::cout << "y: " << pp.GetYPos()  << std::endl;
-					std::cout << "a: " << pp.GetYaw()  << std::endl;
-					std::cout << "Speed: " << speed << std::endl;      
-	      			std::cout << "Turn rate: " << turnrate << std::endl << std::endl;
 	      			robot.Read();
 				}
 			}
@@ -189,12 +185,7 @@ int stuck4 = 0;
 					turnrate=dtor(30);		 
 					std::cout << "zone 1 B: turning south " << std::endl;				
 				}
-				std::cout << "x: " << pp.GetXPos()  << std::endl;
-				std::cout << "y: " << pp.GetYPos()  << std::endl;
-				std::cout << "a: " << pp.GetYaw()  << std::endl;
-			    std::cout << "Speed: " << speed << std::endl;      
-			    std::cout << "Turn rate: " << turnrate << std::endl << std::endl;
-				std::cout << "set speed" << std::endl;	
+				
 	   			pp.SetSpeed(speed, turnrate); 
 			    robot.Read();			    
 			}
@@ -222,28 +213,145 @@ int stuck4 = 0;
 		}
 
 	}else{
-			//if in the zone 2 
-		if(pp.GetXPos() >= 10 && pp.GetYPos() <= 10){
-			//and facing north, go straight ahead
-			if(pp.GetYaw() < 1.6 && pp.GetYaw() > 1.5){
-					std::cout << "zone 2: going straight " << std::endl;
-					turnrate = 0;   
-	    			speed=0.5;
+		//if in the zone 2 
+		if(pp.GetXPos() > 10 && pp.GetYPos() < 10){
+		//if in the zone 2 A
+		if(pp.GetXPos() > 10 && pp.GetYPos() < 7){
+			//and facing east, go straight ahead
+			if(pp.GetYaw() < 1.7 && pp.GetYaw() > 1.4){
+				
+				std::cout << "zone 2A: going straight " << std::endl;
+				turnrate = 0;   
+		    	speed=0.5;
+
+				if(bp[0] || bp[1]){
+			    	std::cout << "wall in contact: ";	
+					speed=-0.2;
+					if (bp[0] && !bp[1]) {  
+						turnrate=dtor(-30); 
+						std::cout << "1" << std::endl;
+						stuck2A++;
+					}
+					if (!bp[0] && bp[1]) { 
+						turnrate=dtor(30); 
+						std::cout << "2" << std::endl;
+						stuck2A++;			
+					}
+
+					if (bp[0] && bp[1]) { stuck1A++; std::cout << "3" << std::endl;
+					if(rand()%2 > 0){turnrate=dtor(-30);}
+					else {turnrate=dtor(30);}}
+						stuck2A++;
+					if(stuck2A > 20){
+						std::cout << "stuck count max: ";
+						if(rand()%2>0)	
+						speed = -0.3;
+						else
+						speed = 0.3;
+						if(rand()%2 > 0){turnrate=dtor(-30);}
+						else {turnrate=dtor(30);}
+					}
+				}
+	
+	   			pp.SetSpeed(speed, turnrate); 
+			    robot.Read();			    
 			}else{
-				//but facing other than south, turn to north
-				while(!(pp.GetYaw() < 1.7 && pp.GetYaw() > 1.4)){
+				//but facing other than north, turn to north
+				if(!(pp.GetYaw() < 1.7 && pp.GetYaw() > 1.4)){
 					speed=0.2;
-					turnrate=dtor(30);
+
+					if(pp.GetYaw() > 1.7)
+						turnrate=dtor(-20);
+					else
+						turnrate=dtor(20);	
+
+					if(bp[0] || bp[1]){
+			    	std::cout << "wall in contact: ";	
+					speed=-0.2;
+					if (bp[0] && !bp[1]) {  
+						turnrate=dtor(-30); 
+						std::cout << "1" << std::endl;
+						stuck2A++;
+					}
+					if (!bp[0] && bp[1]) { 
+						turnrate=dtor(30); 
+						std::cout << "2" << std::endl;
+						stuck2A++;			
+					}
+
+					if (bp[0] && bp[1]) { stuck2A++; std::cout << "3" << std::endl;
+					if(rand()%2 > 0){turnrate=dtor(-30);}
+					else {turnrate=dtor(30);}}
+						stuck2A++;
+					if(stuck2A > 20){
+						std::cout << "stuck count max: = " << stuck2A;
+						if(rand()%2>0)	
+						speed = -0.3;
+						else
+						speed = 0.3;
+						if(rand()%2 > 0){turnrate=dtor(-30);}
+						else {turnrate=dtor(30);}
+					}
+				}
 					pp.SetSpeed(speed, turnrate); 
 					std::cout << "zone 2: turning north " << std::endl;
-				        std::cout << "x: " << pp.GetXPos()  << std::endl;
-				        std::cout << "y: " << pp.GetYPos()  << std::endl;
-				        std::cout << "a: " << pp.GetYaw()  << std::endl;
-      					std::cout << "Speed: " << speed << std::endl;      
-      					std::cout << "Turn rate: " << turnrate << std::endl << std::endl;
-      					robot.Read();
+	      			robot.Read();
 				}
 			}
+		}else{
+			//if in zone 2 B and not facing east, turn east
+			if(!(pp.GetYaw() < 0.1  && pp.GetYaw() > -0.1)){
+				//if hitting an object
+			    if(bp[0] || bp[1]){
+			    	stuck2B++;
+			    	std::cout << "object in contact: stuck count = " << stuck2B << " ";	
+					speed=-0.2;
+					if (bp[0] && !bp[1]) {  turnrate=dtor(-30); std::cout << "1" << std::endl;
+						stuck2B++;
+					}
+					if (!bp[0] && bp[1]) { turnrate=dtor(30); std::cout << "2" << std::endl;
+						stuck2B++;
+					}
+					if (bp[0] && bp[1]) { stuck1B++; std::cout << "3" << std::endl;
+					if(rand()%2 > 0){turnrate=dtor(-30);}
+					else {turnrate=dtor(30);}}
+					stuck2B++;
+					if(stuck2B > 20){
+						std::cout << "stuck count max: ";
+						if(rand()%2>0)	
+						speed = -0.3;
+						else
+						speed = 0.3;
+						if(rand()%2 > 0){turnrate=dtor(-30);}
+						else {turnrate=dtor(30);}
+					}
+				}else{
+					speed=0.2;
+					turnrate=dtor(30);		 
+					std::cout << "zone 2 B: turning east " << std::endl;				
+				}
+				
+	   			pp.SetSpeed(speed, turnrate); 
+			    robot.Read();			    
+			}
+
+			//and move forward till you reach zone 2 A
+			if(!(pp.GetXPos() > 10 && pp.GetYPos() < 20)){
+				turnrate = 0;   
+		    	speed=0.2;		    	
+			    std::cout << "zone 2B: moving towards zone 2A " << std::endl;
+	      	    if(bp[0] || bp[1]){
+			    std::cout << "object in contact" << std::endl;	
+				speed=-0.2;
+				if (bp[0] && !bp[1]) {  turnrate=dtor(-30); }
+				if (!bp[0] && bp[1]) { turnrate=dtor(30);}
+				if (bp[0] && bp[1]) {
+				if(rand()%2 > 0){turnrate=dtor(-30);}
+				else {turnrate=dtor(30);}}} 
+	   			pp.SetSpeed(speed, turnrate); 
+	      		robot.Read();
+			}
+		}
 		}else{
 			//if in the zone 3	 
 			if(pp.GetXPos() > 2 && pp.GetYPos() > 10){
