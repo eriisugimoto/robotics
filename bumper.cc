@@ -43,7 +43,8 @@ int stuck2A = 0;
 int stuck2B = 0;
 int stuck3W = 0;
 int stuck3O = 0;
-int stuck4 = 0;
+int stuck4W = 0;
+int stuck4O = 0;
 
   // Control loop
   while(true) 
@@ -571,40 +572,222 @@ int stuck4 = 0;
 			}
 		}
 			}else{
-				//if in the zone 4	 
-				if(pp.GetXPos() < 1 && pp.GetYPos() > 2){
-						//and facing south, go straight ahead
-					if(pp.GetYaw() < -1.5 && pp.GetYaw() >-1.6){
-							std::cout << "zone 4: going straight " << std::endl;
-							turnrate = 0;   
-		    				speed=0.5;
-					}else{
-						//but facing other than south, turn to south
-						while(!(pp.GetYaw() < -1.5 && pp.GetYaw() >-1.6)){
-								speed=0.2;
+				//if in the zone 4	 			 
+				if(pp.GetXPos() < 2.5 && pp.GetYPos() > 2){
+					std::cout << "zone 4:" << std::endl;
+					//if in the zone 4A
+				if(pp.GetXPos() < 0 || pp.GetYPos() > 10){
+					std::cout << "zone 4A:" << std::endl;
+					//and facing south, keep moving to south
+					if(pp.GetYaw() < -1.5 && pp.GetYaw() > -1.6){		
+						std::cout << "keep moving to south" << std::endl;
+						turnrate = 0;   
+				    	speed=0.5;
+
+					if(bp[0] || bp[1]){
+				    	std::cout << "wall in contact: ";	
+						speed=-0.2;
+						if (bp[0] && !bp[1]) {  
+							turnrate=dtor(-30); 
+							stuck4W++;
+						}
+
+						if (!bp[0] && bp[1]) { 
+							turnrate=dtor(30); 
+							stuck4W++;			
+						}
+
+						if (bp[0] && bp[1]) {
+						 	stuck4W++; 
+
+							if(rand()%2 > 0){
+								turnrate=dtor(-30);
+							}else {
 								turnrate=dtor(30);
-								pp.SetSpeed(speed, turnrate); 
-								std::cout << "zone 4: turning south " << std::endl;
-								std::cout << "x: " << pp.GetXPos()  << std::endl;
-								std::cout << "y: " << pp.GetYPos()  << std::endl;
-								std::cout << "a: " << pp.GetYaw()  << std::endl;
-			      				std::cout << "Speed: " << speed << std::endl;      
-			      				std::cout << "Turn rate: " << turnrate << std::endl << std::endl;
-			      				robot.Read();
+							}
+						}
+							
+						if(stuck4W > 10){
+							std::cout << "stuck count max: ";
+							if(rand()%2>0)	
+								speed = -0.3;
+							else
+								speed = 0.3;
+							if(rand()%2 > 0){
+								turnrate=dtor(-30);
+							}else{
+								turnrate=dtor(30);
+							}
+							stuck4W = 0;
 						}
 					}
+
+	   			pp.SetSpeed(speed, turnrate); 
+			    robot.Read();			    
+			}else{
+				//but facing other than south, turn south
+				if(!(pp.GetYaw() < -1.5 && pp.GetYaw() > -1.6)){
+					std::cout << "turning south" << std::endl;
+					speed=0.2;
+					if(pp.GetYaw() > -1.5 && pp.GetYaw() < 1.6)
+						turnrate=dtor(-20);
+					else
+						turnrate=dtor(20);	
+
+						if(bp[0] || bp[1]){
+				    	std::cout << "wall in contact: ";
+				    	std::cout << "stuck count: " << stuck3W;	
+						speed=-0.2;
+						stuck4W;
+						if (bp[0] && !bp[1]) {  
+							turnrate=dtor(-30); 
+							stuck4W++;
+						}
+
+						if (!bp[0] && bp[1]) { 
+							turnrate=dtor(30); 
+							stuck4W++;			
+						}
+
+						if (bp[0] && bp[1]) {
+						 	stuck4W++; 
+
+							if(rand()%2 > 0){
+								turnrate=dtor(-30);
+							}else {
+								turnrate=dtor(30);
+							}
+						}
+							
+						if(stuck4W > 10){
+							std::cout << "stuck count max: ";
+							if(rand()%2>0)	
+								speed = -0.3;
+							else
+								speed = 0.3;
+
+							if(rand()%2 > 0){
+								turnrate=dtor(-30);
+							}else{
+								turnrate=dtor(30);
+							}
+							stuck4W = 0;
+						}
+					}
+
+					pp.SetSpeed(speed, turnrate); 
+	      			robot.Read();
 				}
+			}
+		}else{
+			//if in zone 4B, but not facing west, turn west
+			std::cout << "zone 4B" << std::endl;
+
+			if(!(pp.GetYaw() < 3.1 && pp.GetYaw() > 3.0)){
+				speed=0.2;
+				if(pp.GetYaw() > 3.1)
+					turnrate=dtor(-20);
+				else
+					turnrate=dtor(20);
+
+				//if hitting an object
+				if(bp[0] || bp[1]){
+				    	std::cout << "object in contact: ";	
+						speed=-0.2;
+						if (bp[0] && !bp[1]) {  
+							turnrate=dtor(-30); 
+							stuck4O++;
+						}
+
+						if (!bp[0] && bp[1]) { 
+							turnrate=dtor(30); 
+							stuck4O++;			
+						}
+
+						if (bp[0] && bp[1]) {
+						 	stuck4O++; 
+
+							if(rand()%2 > 0){
+								turnrate=dtor(-30);
+							}else {
+								turnrate=dtor(30);
+							}
+						}
+							
+						if(stuck4O > 10){
+							std::cout << "stuck count max: ";
+							if(rand()%2>0)	
+								speed = -0.3;
+							else
+								speed = 0.3;
+							if(rand()%2 > 0){
+								turnrate=dtor(-30);
+							}else{
+								turnrate=dtor(30);
+							}
+							stuck4O = 0;
+						}
+					}
+				
+	   			pp.SetSpeed(speed, turnrate); 
+			    robot.Read();			    
+			}
+
+			//in zone 4B and facing south, go straight ahead 
+			if(!(pp.GetXPos() < 0 && pp.GetYPos() > 2)){
+				std::cout << "going back to zone 4A" << std::endl;
+					turnrate = 0;   
+		    		speed=0.2;		    	
+			    
+	      	 //if hitting an object
+				if(bp[0] || bp[1]){
+				    	std::cout << "object in contact: ";	
+						speed=-0.2;
+						if (bp[0] && !bp[1]) {  
+							turnrate=dtor(-30); 
+							stuck4O++;
+						}
+
+						if (!bp[0] && bp[1]) { 
+							turnrate=dtor(30); 
+							stuck4O++;			
+						}
+
+						if (bp[0] && bp[1]) {
+						 	stuck4O++; 
+
+							if(rand()%2 > 0){
+								turnrate=dtor(-30);
+							}else {
+								turnrate=dtor(30);
+							}
+						}
+							
+						if(stuck4O > 10){
+							std::cout << "stuck count max: ";
+							if(rand()%2>0)	
+								speed = -0.3;
+							else
+								speed = 0.3;
+							if(rand()%2 > 0){
+								turnrate=dtor(-30);
+							}else{
+								turnrate=dtor(30);
+							}
+							stuck4O = 0;
+						}
+					}
+				
+
+
+	   			pp.SetSpeed(speed, turnrate); 
+	      		robot.Read();
+			}
+		}
 			}
 		}
 	}
-
-
-    
- 
-
-      std::cout << "Speed: " << speed << std::endl;      
-      std::cout << "Turn rate: " << turnrate << std::endl << std::endl;
-
+}
       // Send the motion commands that we decided on to the robot.
       pp.SetSpeed(speed, turnrate);  
     }
