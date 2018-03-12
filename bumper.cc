@@ -12,9 +12,8 @@
  *  via Carlos Jaramillo, and changed to (hopefully) make it easier to
  *  understand.
  *
- *  Modified:    Simon Parsons
- *  Date:        15th June 2009
- *  Last change: 19th September 2011
+ *  Group #11 - Erii Sugimoto, Alan Yau, 
+ *  Last change: 12th March
  *  
  */
 
@@ -77,10 +76,8 @@ int main(int argc, char *argv[])
       std::cout << "cp[3]: " << checkPoints[3] << std::endl;
       std::cout << "cp[4]: " << checkPoints[4] << std::endl;
       
-
-
 	//if in the zone 1 
-	if(pp.GetXPos() < 10 && pp.GetYPos() < 5){
+	if(pp.GetXPos() <= 10 && pp.GetYPos() <= 4){
 		std::cout << "zone 1: going straight " << std::endl;
 		//if in the zone 1 A
 		if(pp.GetXPos() < 10 && pp.GetYPos() < 2){
@@ -109,11 +106,14 @@ int main(int argc, char *argv[])
 						stuck1A++;			
 					}
 
-					if (bp[0] && bp[1]) { stuck1A++; std::cout << "3" << std::endl;
-					if(rand()%2 > 0){turnrate=dtor(-30);}
+					if (bp[0] && bp[1]) { 
+						stuck1A++; 
+						std::cout << "3" << std::endl;
+					if(rand()%2 > 0){
+						turnrate=dtor(-30);}
 					else {turnrate=dtor(30);}}
-						stuck1A++;
-					if(stuck1A > 20){
+						
+					if(stuck1A > 10){
 						std::cout << "stuck count max: ";
 						if(rand()%2>0)	
 						speed = -0.3;
@@ -121,6 +121,8 @@ int main(int argc, char *argv[])
 						speed = 0.3;
 						if(rand()%2 > 0){turnrate=dtor(-30);}
 						else {turnrate=dtor(30);}
+
+						stuck1A = 0;
 					}
 				}
 
@@ -158,8 +160,8 @@ int main(int argc, char *argv[])
 					if (bp[0] && bp[1]) { stuck1A++; std::cout << "3" << std::endl;
 					if(rand()%2 > 0){turnrate=dtor(-30);}
 					else {turnrate=dtor(30);}}
-						stuck1A++;
-					if(stuck1A > 20){
+						
+					if(stuck1A > 10){
 						std::cout << "stuck count max: ";
 						if(rand()%2>0)	
 						speed = -0.3;
@@ -167,16 +169,21 @@ int main(int argc, char *argv[])
 						speed = 0.3;
 						if(rand()%2 > 0){turnrate=dtor(-30);}
 						else {turnrate=dtor(30);}
+
+						stuck1A = 0;
 					}
 				}
 					pp.SetSpeed(speed, turnrate); 
-					std::cout << "zone 1: turning east " << std::endl;
+					std::cout << "zone 1A: turning east " << std::endl;
 	      			robot.Read();
 				}
 			}
 		}else{
 			//if in zone 1 B, turn south
 			if(!(pp.GetYaw() < -1.5 && pp.GetYaw() >-1.6)){
+					speed=0.2;
+					turnrate=dtor(30);		 
+					std::cout << "zone 1 B: turning south " << std::endl;
 				//if hitting an object
 			    if(bp[0] || bp[1]){
 			    	stuck1B++;
@@ -200,11 +207,9 @@ int main(int argc, char *argv[])
 						speed = 0.3;
 						if(rand()%2 > 0){turnrate=dtor(-30);}
 						else {turnrate=dtor(30);}
+
+						stuck1B = 0;
 					}
-				}else{
-					speed=0.2;
-					turnrate=dtor(30);		 
-					std::cout << "zone 1 B: turning south " << std::endl;				
 				}
 				
 	   			pp.SetSpeed(speed, turnrate); 
@@ -220,14 +225,34 @@ int main(int argc, char *argv[])
 			    std::cout << "a: " << pp.GetYaw()  << std::endl;
 			    std::cout << "Speed: " << speed << std::endl;      
 	      		std::cout << "Turn rate: " << turnrate << std::endl << std::endl;
-	      	    if(bp[0] || bp[1]){
-			    std::cout << "object in contact" << std::endl;	
-				speed=-0.2;
-				if (bp[0] && !bp[1]) {  turnrate=dtor(-30); }
-				if (!bp[0] && bp[1]) { turnrate=dtor(30);}
-				if (bp[0] && bp[1]) {
-				if(rand()%2 > 0){turnrate=dtor(-30);}
-				else {turnrate=dtor(30);}}} 
+	      	    //if hitting an object
+			    if(bp[0] || bp[1]){
+			    	stuck1B++;
+			    	std::cout << "object in contact: stuck count = " << stuck1B << " ";	
+					speed=-0.2;
+					if (bp[0] && !bp[1]) {  turnrate=dtor(-30); std::cout << "1" << std::endl;
+						stuck1B++;
+					}
+					if (!bp[0] && bp[1]) { turnrate=dtor(30); std::cout << "2" << std::endl;
+						stuck1B++;
+					}
+					if (bp[0] && bp[1]) { stuck1B++; std::cout << "3" << std::endl;
+					if(rand()%2 > 0){turnrate=dtor(-30);}
+					else {turnrate=dtor(30);}}
+					stuck1B++;
+					if(stuck1B > 20){
+						std::cout << "stuck count max: ";
+						if(rand()%2>0)	
+						speed = -0.3;
+						else
+						speed = 0.3;
+						if(rand()%2 > 0){turnrate=dtor(-30);}
+						else {turnrate=dtor(30);}
+
+						stuck1B = 0;
+					}
+				}
+
 	   			pp.SetSpeed(speed, turnrate); 
 	      		robot.Read();
 			}
@@ -235,7 +260,7 @@ int main(int argc, char *argv[])
 
 	}else{
 		//if in the zone 2 
-		if(pp.GetXPos() > 10 && pp.GetYPos() < 10){
+		if(pp.GetXPos() > 6 && pp.GetYPos() < 10){
 			std::cout << "zone 2" << std::endl;
 			
 		//if in the zone 2 A
@@ -268,6 +293,7 @@ int main(int argc, char *argv[])
 					if(rand()%2 > 0){turnrate=dtor(-30);}
 					else {turnrate=dtor(30);}}
 						stuck2A++;
+
 					if(stuck2A > 20){
 						std::cout << "stuck count max: ";
 						if(rand()%2>0)	
@@ -276,6 +302,7 @@ int main(int argc, char *argv[])
 						speed = 0.3;
 						if(rand()%2 > 0){turnrate=dtor(-30);}
 						else {turnrate=dtor(30);}
+						stuck2A = 0;
 					}
 				}
 	
@@ -317,6 +344,7 @@ int main(int argc, char *argv[])
 						speed = 0.3;
 						if(rand()%2 > 0){turnrate=dtor(-30);}
 						else {turnrate=dtor(30);}
+						stuck2A = 0;
 					}
 				}
 					pp.SetSpeed(speed, turnrate); 
@@ -326,7 +354,7 @@ int main(int argc, char *argv[])
 			}
 		}else{
 			//if in zone 2B and not facing east, turn east
-			std::cout << "zone 2 B" << std::endl;
+			std::cout << "zone 2B" << std::endl;
 			if(!(pp.GetYaw() < 0.1  && pp.GetYaw() > -0.1)){
 				speed=0.2;
 				if(pp.GetYaw() > 0.1)
@@ -370,14 +398,32 @@ int main(int argc, char *argv[])
 				turnrate = 0;   
 		    	speed=0.2;		    	
 			    std::cout << "zone 2B: moving towards zone 2A " << std::endl;
-	      	    if(bp[0] || bp[1]){
-			    std::cout << "object in contact" << std::endl;	
-				speed=-0.2;
-				if (bp[0] && !bp[1]) {  turnrate=dtor(-30); }
-				if (!bp[0] && bp[1]) { turnrate=dtor(30);}
-				if (bp[0] && bp[1]) {
-				if(rand()%2 > 0){turnrate=dtor(-30);}
-				else {turnrate=dtor(30);}}} 
+	      	//if hitting an object
+			    if(bp[0] || bp[1]){
+			    	stuck2B++;
+			    	std::cout << "object in contact: stuck count = " << stuck2B << " ";	
+					speed=-0.2;
+					if (bp[0] && !bp[1]) {  turnrate=dtor(-30); std::cout << "1" << std::endl;
+						stuck2B++;
+					}
+					if (!bp[0] && bp[1]) { turnrate=dtor(30); std::cout << "2" << std::endl;
+						stuck2B++;
+					}
+					if (bp[0] && bp[1]) { stuck1B++; std::cout << "3" << std::endl;
+					if(rand()%2 > 0){turnrate=dtor(-30);}
+					else {turnrate=dtor(30);}}
+					stuck2B++;
+					if(stuck2B > 20){
+						std::cout << "stuck count max: ";
+						if(rand()%2>0)	
+						speed = -0.3;
+						else
+						speed = 0.3;
+						if(rand()%2 > 0){turnrate=dtor(-30);}
+						else {turnrate=dtor(30);}
+						stuck2B = 0;
+					}
+				}
 	   			pp.SetSpeed(speed, turnrate); 
 	      		robot.Read();
 			}
@@ -393,7 +439,7 @@ int main(int argc, char *argv[])
 					checkPoints[2] = 1;
 					std::cout << "zone 3A:" << std::endl;
 					//and facing west, go straight ahead to the west
-					if(pp.GetYaw() < 3.1 && pp.GetYaw() > 3.0){		
+					if(pp.GetYaw() < 3.2 && pp.GetYaw() > 3.1){		
 						std::cout << "going straight to the west" << std::endl;
 						turnrate = 0;   
 				    	speed=0.5;
@@ -473,7 +519,7 @@ int main(int argc, char *argv[])
 							}
 						}
 							
-						if(stuck3W > 10){
+						if(stuck3W > 20){
 							std::cout << "stuck count max: ";
 							if(rand()%2>0)	
 								speed = -0.3;
@@ -496,7 +542,7 @@ int main(int argc, char *argv[])
 		}else{
 			//if in zone 3B, but nor facing north, turn north
 			std::cout << "zone 3B" << std::endl;
-			if(!(pp.GetYaw() < 1.7 && pp.GetYaw() >1.4)){
+			if(!(pp.GetYaw() < 1.7 && pp.GetYaw() >1.6)){
 				speed=0.2;
 				if(pp.GetYaw() > 1.7)
 					turnrate=dtor(-20);
@@ -527,7 +573,7 @@ int main(int argc, char *argv[])
 							}
 						}
 							
-						if(stuck3O > 10){
+						if(stuck3O > 20){
 							std::cout << "stuck count max: ";
 							if(rand()%2>0)	
 								speed = -0.3;
@@ -576,7 +622,7 @@ int main(int argc, char *argv[])
 							}
 						}
 							
-						if(stuck3O > 10){
+						if(stuck3O > 20){
 							std::cout << "stuck count max: ";
 							if(rand()%2>0)	
 								speed = -0.3;
@@ -599,7 +645,7 @@ int main(int argc, char *argv[])
 		}
 			}else{
 				//if in the zone 4	 			 
-				if(pp.GetXPos() < 3 && pp.GetYPos() > 2){
+				if(pp.GetXPos() < 3 && pp.GetYPos() > 4){
 					std::cout << "zone 4:" << std::endl;
 					//if in the zone 4A
 				if(pp.GetXPos() < 1 || pp.GetYPos() > 10){
@@ -635,7 +681,7 @@ int main(int argc, char *argv[])
 							}
 						}
 							
-						if(stuck4W > 10){
+						if(stuck4W > 20){
 							std::cout << "stuck count max: ";
 							if(rand()%2>0)	
 								speed = -0.3;
@@ -687,7 +733,7 @@ int main(int argc, char *argv[])
 							}
 						}
 							
-						if(stuck4W > 10){
+						if(stuck4W > 20){
 							std::cout << "stuck count max: ";
 							if(rand()%2>0)	
 								speed = -0.3;
@@ -743,7 +789,7 @@ int main(int argc, char *argv[])
 							}
 						}
 							
-						if(stuck4O > 10){
+						if(stuck4O > 20){
 							std::cout << "stuck count max: ";
 							if(rand()%2>0)	
 								speed = -0.3;
@@ -792,7 +838,7 @@ int main(int argc, char *argv[])
 							}
 						}
 							
-						if(stuck4O > 10){
+						if(stuck4O > 20){
 							std::cout << "stuck count max: ";
 							if(rand()%2>0)	
 								speed = -0.3;
