@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
        while(sp.MinLeft() < 0.3){
         std::cout << "sp.MinLeft: " << sp.MinLeft() << std::endl;
         speed = -0.05;
-        turnrate = dtor(-20);
+        turnrate = dtor(-45);
         pp.SetSpeed(speed, turnrate); 
         // Update information from the robot.
         robot.Read();
@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
        while(sp.MinRight() < 0.3){
         std::cout << "sp.MinRight(): " << sp.MinRight() << std::endl;
         speed = -0.05;
-        turnrate = dtor(20);
+        turnrate = dtor(45);
         pp.SetSpeed(speed, turnrate); 
         // Update information from the robot.
         robot.Read();
@@ -141,15 +141,15 @@ int main(int argc, char *argv[])
       
       if(abs(x) > 0.2 || abs(y) > 0.2){
           if(sp.MinRight() > 0.5 && sp.MinLeft() > 0.5)
-          speed = 1;
+          speed = 0.9;
           else
-          speed = 0.5;
+          speed = 0.2;
       }
       else{
           speed = 0.2;
       }
 
-       if(pose.pa < theta){
+      if(pose.pa < theta){
          turnrate = dtor(15);
       }
       else{
@@ -172,7 +172,7 @@ int main(int argc, char *argv[])
       }     
     */
 
- /*     // What are we doing?
+      // What are we doing?
       std::cout << std::endl <<"next_dest: " << next_dest << std::endl;
 
       std::cout << "x_des: " << x_des << std::endl;
@@ -187,7 +187,7 @@ int main(int argc, char *argv[])
 
       std::cout << "Speed: " << speed << std::endl;      
       std::cout << "Turn rate: " << turnrate << std::endl << std::endl;
- */
+ 
       // Send the commands to the robot
       pp.SetSpeed(speed, turnrate);  
       // Count how many times we do this
